@@ -8,7 +8,7 @@ that is thrown during a failed attempt at type casting
 """
 from dataclasses import asdict, dataclass, fields
 from typing import Any
-from casting import cast_to_any_type, ObjectTypeNotCastableError
+from strictdataclass.casting import cast_to_any_type, ObjectTypeNotCastableError
 from instancemethod import instancemethod
 __version__ = "0.0.1"
 __all__ = [
