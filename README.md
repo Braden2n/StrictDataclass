@@ -21,7 +21,7 @@ convenience, and property methods.
 ## Contents
 
 This package contains two modules written in pure Python (3.7 or newer)
-with the following code blocks:
+with the following code blocks accessible from the root module:
 
 - `StrictDataclass`: Inheritable base class for automatic type casting 
 on instantiation
