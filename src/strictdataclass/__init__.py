@@ -6,15 +6,12 @@ introduction for custom dataclasses where type safety is important.
 This module also contains the `ObjectTypeNotCastableError` error class 
 that is thrown during a failed attempt at type casting
 """
-# if __name__ == "__main__":
-#     exit()
 from dataclasses import asdict, dataclass, fields
-from typing import Any
+from typing import Any, Iterator
 from any_cast import cast
 from instancemethod import instancemethod
 __all__ = [
     "StrictDataclass",
-    "ObjectTypeNotCastableError",
 ]
 __refs__ = {
     "AUTHOR": {
@@ -62,10 +59,8 @@ class StrictDataclass:
     - to_dict: Returns a pure-type dictionary representation of an 
     instance.
     """
-    
     def __post_init__(self) -> None:
         self.type_cast_fields()
-
 
     def __getitem__(self, item: int | str) -> Any:
         if isinstance(item, int):
@@ -78,7 +73,6 @@ class StrictDataclass:
                 + f"by `{type(item)}` type is not supported"
             )
 
-
     def __setitem__(self, item: int | str, value: Any) -> None:
         if isinstance(item, int):
             self.__setattr__(fields(self)[item].name, value)
@@ -89,30 +83,31 @@ class StrictDataclass:
                 + f"`{type(item)}` is not supported"
             raise NotImplementedError(error_message)
 
-
     def __delitem__(self, *args, **kwargs) -> None:
         error_message = f"Manually deleting dataclass attributes/items is "\
             + f"not supported"
         raise NotImplementedError(error_message)
     
-
     def __delattr__(self, *args, **kwargs) -> None:
         error_message = f"Manually deleting dataclass attributes/items is "\
             + f"not supported"
         raise NotImplementedError(error_message)
-
+    
+    def __iter__(self) -> Iterator:
+        return iter([{k: v} for k, v in self.to_dict().items()])
+    
+    def __len__(self) -> int:
+        return len([{k: v} for k, v in self.to_dict().items()])
 
     @classproperty
     def all_fields(cls) -> list[str]:
         """Returns a list of the class's field names."""
         return [field.name for field in fields(cls)]
     
-
     @classproperty
     def fields_dict(cls) -> dict[str, Any]:
         """Returns a dict of the class's field names and types."""
         return {field.name: field.type for field in fields(cls)}
-
 
     @instancemethod
     def type_cast_fields(self) -> None:
@@ -124,7 +119,6 @@ class StrictDataclass:
         """
         for key, field_type in self.fields_dict.items():
             self[key] = cast(self[key], field_type)
-
 
     @instancemethod
     def to_dict(self) -> dict[str, Any]:
