@@ -1,4 +1,5 @@
 /dist
 /pyproject.toml
 /.vscode
+/src/**/__pycache__
 */__pycache__

@@ -6,11 +6,12 @@ introduction for custom dataclasses where type safety is important.
 This module also contains the `ObjectTypeNotCastableError` error class 
 that is thrown during a failed attempt at type casting
 """
+# if __name__ == "__main__":
+#     exit()
 from dataclasses import asdict, dataclass, fields
 from typing import Any
-from strictdataclass.casting import cast_to_any_type, ObjectTypeNotCastableError
+from any_cast import cast
 from instancemethod import instancemethod
-__version__ = "0.0.2"
 __all__ = [
     "StrictDataclass",
     "ObjectTypeNotCastableError",
@@ -26,6 +27,13 @@ __refs__ = {
     "REPOSITORY": "https://github.com",
     "CHANGELOG": "https://github.com/Braden2n/StrictDataclass/activity",
 }
+
+
+class classproperty:
+    def __init__(self, func: Any):
+        self.getter = func
+    def __get__(self, _, owner):
+        return self.getter(owner)
 
 
 @dataclass
@@ -94,15 +102,13 @@ class StrictDataclass:
         raise NotImplementedError(error_message)
 
 
-    @classmethod
-    @property
+    @classproperty
     def all_fields(cls) -> list[str]:
         """Returns a list of the class's field names."""
         return [field.name for field in fields(cls)]
     
 
-    @classmethod
-    @property
+    @classproperty
     def fields_dict(cls) -> dict[str, Any]:
         """Returns a dict of the class's field names and types."""
         return {field.name: field.type for field in fields(cls)}
@@ -117,7 +123,7 @@ class StrictDataclass:
         cases.
         """
         for key, field_type in self.fields_dict.items():
-            self[key] = cast_to_any_type(self[key], field_type)
+            self[key] = cast(self[key], field_type)
 
 
     @instancemethod
